@@ -34,7 +34,7 @@ pipeline {
           steps {
             sh 'env'
             sh 'pwd'
-            sh 'find'
+            sh 'find .'
             sh 'git log'
             sh 'git status'
             sh 'apt install gradle'
@@ -53,7 +53,7 @@ pipeline {
           steps {
             sh 'env'
             sh 'pwd'
-            sh 'find'
+            sh 'find .'
             sh 'git log'
             sh 'git status'
             sh 'npm -g install cordova@8'
