@@ -41,7 +41,7 @@ pipeline {
             sh 'npm -g install cordova@8'
             sh 'cp ${GOOGLE_SERVICES} ./fixtures/google-services.json'
             sh './scripts/build-testing-app.sh'
-            stash includes: './testing-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk', name 'android-testing-app'
+            stash includes: './testing-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk', name: 'android-testing-app'
           }
         }
         stage('ios') {
