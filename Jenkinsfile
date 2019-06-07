@@ -57,7 +57,7 @@ pipeline {
             stage('test') {
               agent {
                 docker {
-                  image 'ircleci/node:dubnium-stretch'
+                  image 'circleci/node:dubnium-stretch'
                   label 'psi_rhel8'
                   args '-u root'
                 }
@@ -96,7 +96,7 @@ pipeline {
             stage('test') {
               agent {
                 docker {
-                  image 'ircleci/node:dubnium-stretch'
+                  image 'circleci/node:dubnium-stretch'
                   label 'psi_rhel8'
                   args '-u root'
                 }
