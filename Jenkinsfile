@@ -17,7 +17,14 @@
 
 pipeline {
   agent none
+  environment {
+    BROWSERSTACK_USER = credentials('browserstack-user')
+    BROWSERSTACK_KEY = credentials('browserstack-key')
+  }
   stages {
+
+    // build testing app
+    // -----------------
     stage('build testing app') {
       parallel {
         stage('android') {
@@ -66,6 +73,9 @@ pipeline {
         }
       }
     }
+
+    // test
+    // ----
     stage('test') {
       agent {
         docker {
