@@ -22,111 +22,84 @@ pipeline {
     BROWSERSTACK_KEY = credentials('browserstack-key')
   }
   stages {
-    stage('') {
+    stage('build') {
       parallel {
 
         stage('android') {
-          stages {
-
-            stage('build') {
-              agent { 
-                docker {
-                  image 'circleci/android:api-28-node'
-                  label 'psi_rhel8'
-                  args '-u root'
-                }
-              }
-              environment {
-                GOOGLE_SERVICES = credentials('google-services')
-              }
-              steps {
-                sh 'env'
-                sh 'pwd'
-                sh 'find .'
-                sh 'git log'
-                sh 'git status'
-                sh 'apt install gradle'
-                sh 'npm -g install cordova@8'
-                sh 'cp ${GOOGLE_SERVICES} ./fixtures/google-services.json'
-                sh './scripts/build-testing-app.sh'
-                sh 'cat ./testing-app/bs-app-url.txt'
-                stash includes: 'testing-app/bs-app-url.txt', name: 'android-testing-app'
-              }
+          agent { 
+            docker {
+              image 'circleci/android:api-28-node'
+              label 'psi_rhel8'
+              args '-u root'
             }
-
-            stage('test') {
-              agent {
-                docker {
-                  image 'circleci/node:dubnium-stretch'
-                  label 'psi_rhel8'
-                  args '-u root'
-                }
-              }
-              steps {
-                unstash 'android-testing-app'
-                sh 'find .'
-              }
-            }
+          }
+          environment {
+            GOOGLE_SERVICES = credentials('google-services')
+          }
+          steps {
+            sh 'env'
+            sh 'pwd'
+            sh 'find .'
+            sh 'git log'
+            sh 'git status'
+            sh 'apt install gradle'
+            sh 'npm -g install cordova@8'
+            sh 'cp ${GOOGLE_SERVICES} ./fixtures/google-services.json'
+            sh './scripts/build-testing-app.sh'
+            sh 'cat ./testing-app/bs-app-url.txt'
+            stash includes: 'testing-app/bs-app-url.txt', name: 'android-testing-app'
           }
         }
 
         stage('ios') {
-          stages {
-            
-            stage('build') {
-              agent { label 'osx5x' }
-              environment { 
-                MOBILE_PLATFORM = 'ios'
-                DEVELOPMENT_TEAM = 'GHPBX39444'
-                KEYCHAIN_PASS = '5sdfDSO8ig'
-              }
-              steps {
-                sh 'env'
-                sh 'pwd'
-                sh 'find .'
-                sh 'git log'
-                sh 'git status'
-                sh 'npm -g install cordova@8'
-                sh 'security unlock-keychain -p $KEYCHAIN_PASS && ./scripts/build-testing-app.sh'
-                sh 'cat ./testing-app/bs-app-url.txt'
-                stash includes: 'testing-app/bs-app-url.txt', name: 'ios-testing-app'        
-              }
-            }
-
-            stage('test') {
-              agent {
-                docker {
-                  image 'circleci/node:dubnium-stretch'
-                  label 'psi_rhel8'
-                  args '-u root'
-                }
-              }
-              steps {
-                unstash 'ios-testing-app'
-                sh 'find .'
-              }
-            }
+          agent { label 'osx5x' }
+          environment { 
+            MOBILE_PLATFORM = 'ios'
+            DEVELOPMENT_TEAM = 'GHPBX39444'
+            KEYCHAIN_PASS = '5sdfDSO8ig'
+          }
+          steps {
+            sh 'env'
+            sh 'pwd'
+            sh 'find .'
+            sh 'git log'
+            sh 'git status'
+            sh 'npm -g install cordova@8'
+            sh 'security unlock-keychain -p $KEYCHAIN_PASS && ./scripts/build-testing-app.sh'
+            sh 'cat ./testing-app/bs-app-url.txt'
+            stash includes: 'testing-app/bs-app-url.txt', name: 'ios-testing-app'        
           }
         }
       }
     }
 
-    // test
-    // ----
-    // stage('test') {
-    //   agent {
-    //     docker {
-    //       image 'ircleci/node:dubnium-stretch'
-    //       label 'psi_rhel8'
-    //       args '-u root'
-    //     }
-    //   }
-    //   steps {
-    //     unstash 'ios-testing-app'
-    //     unstash 'android-testing-app'
-    //     sh 'find .'
-    //   }
-    // }
+    stage('test android') {
+      agent {
+        docker {
+          image 'circleci/node:dubnium-stretch'
+          label 'psi_rhel8'
+          args '-u root'
+        }
+      }
+      steps {
+        unstash 'android-testing-app'
+        sh 'find .'
+      }
+    }
+
+    stage('test ios') {
+      agent {
+        docker {
+          image 'circleci/node:dubnium-stretch'
+          label 'psi_rhel8'
+          args '-u root'
+        }
+      }
+      steps {
+        unstash 'ios-testing-app'
+        sh 'find .'
+      }
+    }
   }
 }
 
