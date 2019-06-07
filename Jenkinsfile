@@ -16,7 +16,7 @@
 // }
 
 pipeline {
-  agent any
+  agent none
   stages {
     stage('build testing app') {
       parallel {
@@ -24,7 +24,8 @@ pipeline {
           agent { 
               docker {
                 image 'circleci/android:api-28-node'
-            } 
+                label 'psi_rhel8'
+            }
           }
           environment {
             GOOGLE_SERVICES = credentials('google-services')
