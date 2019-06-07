@@ -92,18 +92,23 @@ pipeline {
           }
         }
         stage('test android') {
-          agent {
-            docker {
-              image 'circleci/node:dubnium-stretch'
-              label '${NODE_LABELS}'
-              args '-u root --network aerogear'
+          steps {
+            withDockerContainer(image: 'circleci/node:dubnium-stretch', args: '-u root --network aerogear') {
+              unstash 'android-testing-app'
+              sh 'npm install'
+              sh 'npm install mocha-jenkins-reporter'
             }
           }
-          steps {
-            unstash 'android-testing-app'
-            sh 'npm install'
-            sh 'npm install mocha-jenkins-reporter'
-          }
+        }
+      }
+      post { 
+        always {
+          sh 'docker-comp'
+            echo 'I will always say Hello again!'
+            sh 'docker-compose logs > docker-compose.log'
+            sh 'docker-compose down'
+            archiveArtifacts 'docker-compose.log'
+            sh 'docker network rm aerogear'
         }
       }
     }
