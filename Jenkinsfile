@@ -73,6 +73,11 @@ pipeline {
         }
       }
       steps {
+        sh 'env'
+        sh 'pwd'
+        sh 'find .'
+        sh 'git log'
+        sh 'git status'
         unstash 'ios-testing-app'
         unstash 'android-testing-app'
       }
