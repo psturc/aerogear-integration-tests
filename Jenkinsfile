@@ -25,6 +25,7 @@ pipeline {
               docker {
                 image 'circleci/android:api-28-node'
                 label 'psi_rhel8'
+                args '-u root'
             }
           }
           environment {
