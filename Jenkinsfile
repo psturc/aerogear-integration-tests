@@ -38,6 +38,7 @@ pipeline {
             sh 'git log'
             sh 'git status'
             sh 'apt install gradle'
+            sh 'npm -g install cordova@8'
             sh 'cp ${GOOGLE_SERVICES} ./fixtures/google-services.json'
             sh './scripts/build-testing-app.sh'
           }
