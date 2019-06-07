@@ -73,33 +73,76 @@ pipeline {
       }
     }
 
-    stage('test android') {
+    stage('test') {
       agent {
-        docker {
-          image 'circleci/node:dubnium-stretch'
-          label 'psi_rhel8'
-          args '-u root'
+        label 'psi_rhel8'
+        // docker {
+        //   image 'circleci/node:dubnium-stretch'
+        //   label 'psi_rhel8'
+        //   args '-u root'
+        // }
+      }
+      stages {
+        stage('start services') {
+          steps {
+            sh 'docker network create aerogear || true'
+            sh 'sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-\$(uname -s)-\$(uname -m)" -o /usr/local/bin/docker-compose'
+            sh 'sudo chmod +x /usr/local/bin/docker-compose'
+            sh 'docker-compose up -d'
+          }
+        }
+        stage('test android') {
+          agent {
+            docker {
+              image 'circleci/node:dubnium-stretch'
+              label '${NODE_LABELS}'
+              args '-u root --network aerogear'
+            }
+          }
+          steps {
+            unstash 'android-testing-app'
+            sh 'npm install'
+            sh 'npm install mocha-jenkins-reporter'
+          }
         }
       }
-      steps {
-        unstash 'android-testing-app'
-        sh 'find .'
-      }
     }
+    //   steps {
+    //     // 
+    //     // sh 'find .'
+    //     // docker.image('verdaccio/verdaccio').withRun('--network aerogear --name verdaccio -p 4873:4873') {
+    //     // }
+    //     // sh 'docker'
 
-    stage('test ios') {
-      agent {
-        docker {
-          image 'circleci/node:dubnium-stretch'
-          label 'psi_rhel8'
-          args '-u root'
-        }
-      }
-      steps {
-        unstash 'ios-testing-app'
-        sh 'find .'
-      }
-    }
+        
+
+    //     stage('android') {
+    //       withDockerContainer(image: 'circleci/node:dubnium-stretch', args: '-u root') {
+            
+    //         withEnv([
+    //           'MOBILE_PLATFORM=android',
+    //           'BROWSERSTACK_APP=' + androidAppUrl
+    //         ]) {
+    //           runTests()
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+
+    // stage('test ios') {
+    //   agent {
+    //     docker {
+    //       image 'circleci/node:dubnium-stretch'
+    //       label 'psi_rhel8'
+    //       args '-u root'
+    //     }
+    //   }
+    //   steps {
+    //     unstash 'ios-testing-app'
+    //     sh 'find .'
+    //   }
+    // }
   }
 }
 
