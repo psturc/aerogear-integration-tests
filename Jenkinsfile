@@ -42,7 +42,7 @@ pipeline {
             sh 'cp ${GOOGLE_SERVICES} ./fixtures/google-services.json'
             sh './scripts/build-testing-app.sh'
             sh 'cat ./testing-app/bs-app-url.txt'
-            stash includes: './testing-app/bs-app-url.txt', name: 'android-testing-app'
+            stash includes: 'testing-app/bs-app-url.txt', name: 'android-testing-app'
           }
         }
         stage('ios') {
@@ -61,7 +61,7 @@ pipeline {
             sh 'npm -g install cordova@8'
             sh 'security unlock-keychain -p $KEYCHAIN_PASS && ./scripts/build-testing-app.sh'
             sh 'cat ./testing-app/bs-app-url.txt'
-            stash includes: './testing-app/bs-app-url.txt', name: 'ios-testing-app'        
+            stash includes: 'testing-app/bs-app-url.txt', name: 'ios-testing-app'        
           }
         }
       }
