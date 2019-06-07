@@ -41,7 +41,8 @@ pipeline {
             sh 'npm -g install cordova@8'
             sh 'cp ${GOOGLE_SERVICES} ./fixtures/google-services.json'
             sh './scripts/build-testing-app.sh'
-            stash includes: './testing-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk', name: 'android-testing-app'
+            sh 'cat ./testing-app/bs-app-url.txt'
+            stash includes: './testing-app/bs-app-url.txt', name: 'android-testing-app'
           }
         }
         stage('ios') {
@@ -59,7 +60,8 @@ pipeline {
             sh 'git status'
             sh 'npm -g install cordova@8'
             sh 'security unlock-keychain -p $KEYCHAIN_PASS && ./scripts/build-testing-app.sh'
-            stash includes: './testing-app/platforms/ios/build/device/HelloCordova.ipa', name: 'ios-testing-app'        
+            sh 'cat ./testing-app/bs-app-url.txt'
+            stash includes: './testing-app/bs-app-url.txt', name: 'ios-testing-app'        
           }
         }
       }
@@ -73,13 +75,9 @@ pipeline {
         }
       }
       steps {
-        sh 'env'
-        sh 'pwd'
-        sh 'find .'
-        sh 'git log'
-        sh 'git status'
         unstash 'ios-testing-app'
         unstash 'android-testing-app'
+        sh 'find .'
       }
     }
   }
