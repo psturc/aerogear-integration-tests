@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+set -ex
 if [ "$CI" = "true" ]; then
   export KEYCLOAK_HOST=keycloak
   export METRICS_HOST=metrics

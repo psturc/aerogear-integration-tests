@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 if [ ! -d "./testing-app" ]; then
   cordova create testing-app
@@ -24,7 +24,8 @@ npm install --save \
   @aerogear/voyager-client \
   @aerogear/push \
   webpack \
-  webpack-cli
+  webpack-cli \
+  offix-cache
 
 cordova plugin add @aerogear/cordova-plugin-aerogear-metrics
 cordova plugin add @aerogear/cordova-plugin-aerogear-security
